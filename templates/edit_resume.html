@@ -1,0 +1,309 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Edit Resume - Resumify</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <style>
+    .section-header {
+      background: linear-gradient(to right, #4f46e5, #7c3aed);
+      color: white;
+      padding: 0.75rem 1rem;
+      border-radius: 0.5rem;
+      margin-bottom: 1rem;
+      font-weight: 600;
+    }
+    .remove-btn {
+      transition: all 0.2s;
+    }
+    .remove-btn:hover {
+      transform: scale(1.05);
+    }
+  </style>
+</head>
+<body class="bg-gradient-to-br from-gray-50 to-gray-100 py-10 text-gray-800 font-sans">
+  <div class="max-w-4xl mx-auto bg-white p-10 rounded-xl shadow-2xl">
+    <div class="mb-8">
+      <h1 class="text-3xl font-bold text-indigo-700 mb-2">Edit Resume</h1>
+      <p class="text-gray-600">Update your resume details</p>
+    </div>
+
+    <form method="POST" enctype="multipart/form-data" action="{{ url_for('edit_resume', resume_id=resume.id) }}" class="space-y-8">
+
+      <!-- Personal Info -->
+      <div>
+        <div class="section-header">📋 Personal Information</div>
+        <div class="space-y-4">
+          <div>
+            <label class="block font-semibold text-gray-700 mb-1">Full Name</label>
+            <input name="name" class="w-full border border-gray-300 px-4 py-2.5 rounded-lg focus:ring-2 focus:ring-indigo-500" value="{{ resume.name }}" required>
+          </div>
+
+          <div>
+            <label class="block font-semibold text-gray-700 mb-1">Job Title</label>
+            <input name="profession" class="w-full border border-gray-300 px-4 py-2.5 rounded-lg focus:ring-2 focus:ring-indigo-500" value="{{ resume.profession }}" required>
+          </div>
+
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div>
+              <label class="block font-semibold text-gray-700 mb-1">Email</label>
+              <input name="email" type="email" class="w-full border border-gray-300 px-4 py-2.5 rounded-lg focus:ring-2 focus:ring-indigo-500" value="{{ resume.email }}">
+            </div>
+            <div>
+              <label class="block font-semibold text-gray-700 mb-1">Phone</label>
+              <input name="phone" type="text" class="w-full border border-gray-300 px-4 py-2.5 rounded-lg focus:ring-2 focus:ring-indigo-500" value="{{ resume.phone }}">
+            </div>
+          </div>
+
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div>
+              <label class="block font-semibold text-gray-700 mb-1">LinkedIn URL</label>
+              <input name="linkedin" type="url" class="w-full border border-gray-300 px-4 py-2.5 rounded-lg focus:ring-2 focus:ring-indigo-500" value="{{ resume.linkedin }}">
+            </div>
+            <div>
+              <label class="block font-semibold text-gray-700 mb-1">GitHub URL</label>
+              <input name="github" type="url" class="w-full border border-gray-300 px-4 py-2.5 rounded-lg focus:ring-2 focus:ring-indigo-500" value="{{ resume.github }}">
+            </div>
+          </div>
+
+          <div>
+            <label class="block font-semibold text-gray-700 mb-1">Upload New Profile Picture (optional)</label>
+            <input type="file" name="profile_pic" accept="image/*" class="w-full border border-gray-300 px-4 py-2.5 rounded-lg bg-white file:mr-4 file:py-2 file:px-4 file:rounded-lg file:border-0 file:bg-indigo-50 file:text-indigo-700">
+            {% if resume.profile_pic_url %}
+            <p class="text-sm text-gray-500 mt-1">Current: <a href="{{ resume.profile_pic_url }}" target="_blank" class="text-indigo-600 underline">View Image</a></p>
+            {% endif %}
+          </div>
+        </div>
+      </div>
+
+      <!-- Bio -->
+      <div>
+        <div class="section-header">✍️ Professional Summary</div>
+        <textarea name="bio" class="w-full border border-gray-300 px-4 py-2.5 rounded-lg focus:ring-2 focus:ring-indigo-500" rows="4">{{ resume.bio }}</textarea>
+      </div>
+
+      <!-- Skills -->
+      <div>
+        <div class="section-header">🎯 Skills</div>
+        <input name="skills" class="w-full border border-gray-300 px-4 py-2.5 rounded-lg focus:ring-2 focus:ring-indigo-500" value="{{ resume.skills }}">
+        <p class="text-sm text-gray-500 mt-1">Comma-separated</p>
+      </div>
+
+      <!-- Experience -->
+      <div>
+        <div class="section-header">💼 Work Experience</div>
+        <div id="experience-section" class="space-y-4">
+          {% if experiences and experiences|length > 0 %}
+            {% for exp in experiences %}
+            <div class="experience-entry border-2 border-blue-200 p-5 rounded-lg bg-blue-50">
+              <div class="flex justify-between items-center mb-3">
+                <h4 class="font-semibold text-blue-700">Experience {{ loop.index }}</h4>
+                <button type="button" onclick="removeEntry(this, 'experience-section', 'experience-entry', 'Experience')"
+                        class="remove-btn px-3 py-1 bg-red-500 text-white rounded-lg text-sm hover:bg-red-600">
+                  Remove
+                </button>
+              </div>
+              <input type="text" name="experiences[{{ loop.index0 }}][job_title]" placeholder="Job Title"
+                    class="w-full p-3 border border-gray-300 rounded-lg mb-3 focus:ring-2 focus:ring-blue-500" value="{{ exp.job_title }}">
+              <input type="text" name="experiences[{{ loop.index0 }}][company]" placeholder="Company Name"
+                    class="w-full p-3 border border-gray-300 rounded-lg mb-3 focus:ring-2 focus:ring-blue-500" value="{{ exp.company }}">
+              <textarea name="experiences[{{ loop.index0 }}][job_desc]" placeholder="Job Description"
+                        class="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500" rows="3">{{ exp.job_desc }}</textarea>
+            </div>
+            {% endfor %}
+          {% endif %}
+        </div>
+        <button type="button" onclick="addExperience()"
+                class="mt-3 px-5 py-2.5 bg-blue-100 text-blue-700 rounded-lg hover:bg-blue-200 font-medium transition">
+          + Add Experience
+        </button>
+      </div>
+
+      <!-- Education -->
+      <div>
+        <div class="section-header">🎓 Education</div>
+        <div class="space-y-4">
+          <input name="degree" class="w-full border border-gray-300 px-4 py-2.5 rounded-lg focus:ring-2 focus:ring-indigo-500" value="{{ resume.degree }}" placeholder="Degree">
+          <input name="institute" class="w-full border border-gray-300 px-4 py-2.5 rounded-lg focus:ring-2 focus:ring-indigo-500" value="{{ resume.institute }}" placeholder="Institute">
+          <input name="grad_year" class="w-full border border-gray-300 px-4 py-2.5 rounded-lg focus:ring-2 focus:ring-indigo-500" value="{{ resume.grad_year }}" placeholder="Graduation Year">
+        </div>
+      </div>
+
+      <!-- Projects -->
+      <div>
+        <div class="section-header">🚀 Projects</div>
+        <div id="projects-section" class="space-y-4">
+          {% if projects and projects|length > 0 %}
+            {% for project in projects %}
+            <div class="project-entry border-2 border-indigo-200 p-5 rounded-lg bg-indigo-50">
+              <div class="flex justify-between items-center mb-3">
+                <h4 class="font-semibold text-indigo-700">Project {{ loop.index }}</h4>
+                <button type="button" onclick="removeEntry(this, 'projects-section', 'project-entry', 'Project')"
+                        class="remove-btn px-3 py-1 bg-red-500 text-white rounded-lg text-sm hover:bg-red-600">
+                  Remove
+                </button>
+              </div>
+              <input type="text" name="projects[{{ loop.index0 }}][name]" placeholder="Project Name"
+                    class="w-full p-3 border border-gray-300 rounded-lg mb-3 focus:ring-2 focus:ring-indigo-500" value="{{ project.name }}">
+              <textarea name="projects[{{ loop.index0 }}][description]" placeholder="Project Description"
+                        class="w-full p-3 border border-gray-300 rounded-lg mb-3 focus:ring-2 focus:ring-indigo-500" rows="2">{{ project.description }}</textarea>
+              <input type="url" name="projects[{{ loop.index0 }}][link]" placeholder="Project Link"
+                    class="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500" value="{{ project.link }}">
+            </div>
+            {% endfor %}
+          {% endif %}
+        </div>
+        <button type="button" onclick="addProject()"
+                class="mt-3 px-5 py-2.5 bg-indigo-100 text-indigo-700 rounded-lg hover:bg-indigo-200 font-medium transition">
+          + Add Project
+        </button>
+      </div>
+
+      <!-- Certifications -->
+      <div>
+        <div class="section-header">🏆 Certifications</div>
+        <div id="certifications-section" class="space-y-4">
+          {% if certifications and certifications|length > 0 %}
+            {% for cert in certifications %}
+            <div class="cert-entry border-2 border-purple-200 p-5 rounded-lg bg-purple-50">
+              <div class="flex justify-between items-center mb-3">
+                <h4 class="font-semibold text-purple-700">Certification {{ loop.index }}</h4>
+                <button type="button" onclick="removeEntry(this, 'certifications-section', 'cert-entry', 'Certification')"
+                        class="remove-btn px-3 py-1 bg-red-500 text-white rounded-lg text-sm hover:bg-red-600">
+                  Remove
+                </button>
+              </div>
+              <input type="text" name="certifications[{{ loop.index0 }}][name]" placeholder="Certification Name"
+                    class="w-full p-3 border border-gray-300 rounded-lg mb-3 focus:ring-2 focus:ring-purple-500" value="{{ cert.name }}">
+              <input type="text" name="certifications[{{ loop.index0 }}][issuer]" placeholder="Issuing Organization"
+                    class="w-full p-3 border border-gray-300 rounded-lg mb-3 focus:ring-2 focus:ring-purple-500" value="{{ cert.issuer }}">
+              <input type="text" name="certifications[{{ loop.index0 }}][year]" placeholder="Year"
+                    class="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500" value="{{ cert.year }}">
+            </div>
+            {% endfor %}
+          {% endif %}
+        </div>
+        <button type="button" onclick="addCertification()"
+                class="mt-3 px-5 py-2.5 bg-purple-100 text-purple-700 rounded-lg hover:bg-purple-200 font-medium transition">
+          + Add Certification
+        </button>
+      </div>
+
+      <!-- Template Selection -->
+      <div>
+        <div class="section-header">🎨 Resume Template</div>
+        <select name="template" class="w-full border-2 border-gray-300 px-4 py-3 rounded-lg focus:ring-2 focus:ring-indigo-500 text-lg">
+          <option value="classic" {% if resume.template == 'classic' %}selected{% endif %}>Classic</option>
+          <option value="modern" {% if resume.template == 'modern' %}selected{% endif %}>Modern</option>
+          <option value="minimal" {% if resume.template == 'minimal' %}selected{% endif %}>Minimal</option>
+          <option value="sidepanel" {% if resume.template == 'sidepanel' %}selected{% endif %}>Side Panel</option>
+          <option value="banner" {% if resume.template == 'banner' %}selected{% endif %}>Banner Header</option>
+          <option value="splitgrid" {% if resume.template == 'splitgrid' %}selected{% endif %}>Split Grid</option>
+        </select>
+      </div>
+
+      <!-- Action Buttons -->
+      <div class="flex justify-between items-center pt-4 border-t">
+        <a href="{{ url_for('my_resumes') }}" class="text-gray-500 hover:text-gray-700 underline">← Back to My Resumes</a>
+        <button type="submit" class="bg-gradient-to-r from-indigo-600 to-purple-600 text-white px-8 py-3 rounded-lg hover:from-indigo-700 hover:to-purple-700 font-semibold shadow-lg">
+          💾 Save Changes
+        </button>
+      </div>
+    </form>
+  </div>
+
+  <script>
+    let expCount = {{ experiences|length if experiences else 0 }};
+    let projectCount = {{ projects|length if projects else 0 }};
+    let certCount = {{ certifications|length if certifications else 0 }};
+
+    function updateNumbering(sectionId, className, label) {
+      const section = document.getElementById(sectionId);
+      const entries = section.querySelectorAll(`.${className}`);
+      entries.forEach((entry, index) => {
+        const header = entry.querySelector('h4');
+        if (header) {
+          header.textContent = `${label} ${index + 1}`;
+        }
+      });
+    }
+
+    function addExperience() {
+      const section = document.getElementById('experience-section');
+      const entry = document.createElement('div');
+      entry.classList.add('experience-entry', 'border-2', 'border-blue-200', 'p-5', 'rounded-lg', 'bg-blue-50');
+      entry.innerHTML = `
+        <div class="flex justify-between items-center mb-3">
+          <h4 class="font-semibold text-blue-700">Experience ${expCount + 1}</h4>
+          <button type="button" onclick="removeEntry(this, 'experience-section', 'experience-entry', 'Experience')"
+                  class="remove-btn px-3 py-1 bg-red-500 text-white rounded-lg text-sm hover:bg-red-600">
+            Remove
+          </button>
+        </div>
+        <input type="text" name="experiences[${expCount}][job_title]" placeholder="Job Title"
+              class="w-full p-3 border border-gray-300 rounded-lg mb-3 focus:ring-2 focus:ring-blue-500">
+        <input type="text" name="experiences[${expCount}][company]" placeholder="Company Name"
+              class="w-full p-3 border border-gray-300 rounded-lg mb-3 focus:ring-2 focus:ring-blue-500">
+        <textarea name="experiences[${expCount}][job_desc]" placeholder="Job Description"
+                  class="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500" rows="3"></textarea>
+      `;
+      section.appendChild(entry);
+      expCount++;
+      updateNumbering('experience-section', 'experience-entry', 'Experience');
+    }
+
+    function addProject() {
+      const section = document.getElementById('projects-section');
+      const entry = document.createElement('div');
+      entry.classList.add('project-entry', 'border-2', 'border-indigo-200', 'p-5', 'rounded-lg', 'bg-indigo-50');
+      entry.innerHTML = `
+        <div class="flex justify-between items-center mb-3">
+          <h4 class="font-semibold text-indigo-700">Project ${projectCount + 1}</h4>
+          <button type="button" onclick="removeEntry(this, 'projects-section', 'project-entry', 'Project')"
+                  class="remove-btn px-3 py-1 bg-red-500 text-white rounded-lg text-sm hover:bg-red-600">
+            Remove
+          </button>
+        </div>
+        <input type="text" name="projects[${projectCount}][name]" placeholder="Project Name"
+              class="w-full p-3 border border-gray-300 rounded-lg mb-3 focus:ring-2 focus:ring-indigo-500">
+        <textarea name="projects[${projectCount}][description]" placeholder="Project Description"
+                  class="w-full p-3 border border-gray-300 rounded-lg mb-3 focus:ring-2 focus:ring-indigo-500" rows="2"></textarea>
+        <input type="url" name="projects[${projectCount}][link]" placeholder="Project Link"
+              class="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500">
+      `;
+      section.appendChild(entry);
+      projectCount++;
+      updateNumbering('projects-section', 'project-entry', 'Project');
+    }
+
+    function addCertification() {
+      const section = document.getElementById('certifications-section');
+      const entry = document.createElement('div');
+      entry.classList.add('cert-entry', 'border-2', 'border-purple-200', 'p-5', 'rounded-lg', 'bg-purple-50');
+      entry.innerHTML = `
+        <div class="flex justify-between items-center mb-3">
+          <h4 class="font-semibold text-purple-700">Certification ${certCount + 1}</h4>
+          <button type="button" onclick="removeEntry(this, 'certifications-section', 'cert-entry', 'Certification')"
+                  class="remove-btn px-3 py-1 bg-red-500 text-white rounded-lg text-sm hover:bg-red-600">
+            Remove
+          </button>
+        </div>
+        <input type="text" name="certifications[${certCount}][name]" placeholder="Certification Name"
+              class="w-full p-3 border border-gray-300 rounded-lg mb-3 focus:ring-2 focus:ring-purple-500">
+        <input type="text" name="certifications[${certCount}][issuer]" placeholder="Issuing Organization"
+              class="w-full p-3 border border-gray-300 rounded-lg mb-3 focus:ring-2 focus:ring-purple-500">
+        <input type="text" name="certifications[${certCount}][year]" placeholder="Year"
+              class="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500">
+      `;
+      section.appendChild(entry);
+      certCount++;
+      updateNumbering('certifications-section', 'cert-entry', 'Certification');
+    }
+
+    function removeEntry(button, sectionId, className, label) {
+      button.closest(`.${className}`).remove();
+      updateNumbering(sectionId, className, label);
+    }
+  </script>
+</body>
+</html>

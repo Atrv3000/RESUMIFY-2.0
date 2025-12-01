@@ -1,0 +1,155 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>{{ name }} – Resume</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <style>
+    
+    button:hover svg {
+      transform: rotate(20deg);
+      transition: transform 0.2s ease;
+    }
+    @media print {
+      .no-print { display: none !important; }
+      body { background: white; }
+    }
+  </style>
+</head>
+<body class="bg-white text-gray-800 font-sans py-10">
+
+<div class="max-w-4xl mx-auto shadow-lg border rounded-xl overflow-hidden">
+  <!-- Top Banner -->
+  <div class="bg-indigo-600 text-white flex flex-col md:flex-row items-center justify-between p-6">
+    <div>
+      <h1 class="text-3xl font-bold">{{ name }}</h1>
+      <h2 class="text-md">{{ profession }}</h2>
+      <div class="text-sm mt-1 space-y-1">
+        {% if email %}<div>📧 {{ email }}</div>{% endif %}
+        {% if phone %}<div>📱 {{ phone }}</div>{% endif %}
+        {% if linkedin %}<div>💼 <a href="{{ linkedin }}" class="underline hover:text-indigo-200" target="_blank">LinkedIn</a></div>{% endif %}
+        {% if github %}<div>💻 <a href="{{ github }}" class="underline hover:text-indigo-200" target="_blank">GitHub</a></div>{% endif %}
+      </div>
+    </div>
+    {% if profile_pic_url %}
+    <img src="{{ profile_pic_url }}" alt="Profile Pic" class="w-28 h-28 object-cover rounded-full border-4 border-white mt-4 md:mt-0">
+    {% endif %}
+  </div>
+
+  <!-- Body -->
+  <div class="p-8 space-y-6">
+    
+    <!-- Summary section -->
+    <section class="relative">
+      <h3 class="text-lg font-semibold mb-2 text-indigo-700">Summary</h3>
+      <div class="relative group">
+        <p id="bio" class="text-sm leading-relaxed text-gray-700 pr-8">{{ bio }}</p>
+        <!-- Regenerate Icon Button -->
+        <button onclick="regenerateBio()" 
+                class="no-print absolute top-0 right-0 text-gray-400 hover:text-indigo-600 transition" 
+                title="Regenerate Bio">
+          <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" 
+               viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+            <path stroke-linecap="round" stroke-linejoin="round"
+                  d="M4 4v6h6M20 20v-6h-6M5.5 18.5A8.001 8.001 0 0112 4v0m6.5 1.5A8.001 8.001 0 0112 20" />
+          </svg>
+        </button>
+      </div>
+    </section>
+
+    <!-- Skills -->
+    <section>
+      <h3 class="text-lg font-semibold mb-2 text-indigo-700">Skills</h3>
+      <ul class="flex flex-wrap gap-2 text-sm">
+        {% for skill in skills %}
+        <li class="bg-indigo-100 text-indigo-800 px-3 py-1 rounded-full">{{ skill.strip() }}</li>
+        {% endfor %}
+      </ul>
+    </section>
+
+    <!-- Experience -->
+    {% if experiences and experiences|length > 0 %}
+    <section>
+      <h3 class="text-lg font-semibold mb-3 text-indigo-700">Experience</h3>
+      {% for exp in experiences %}
+      <div class="mb-4 {% if not loop.last %}pb-4 border-b border-gray-200{% endif %}">
+        {% if exp.job_title %}<div class="font-semibold text-gray-800">{{ exp.job_title }}</div>{% endif %}
+        {% if exp.company %}<div class="text-sm italic text-indigo-600 mb-1">{{ exp.company }}</div>{% endif %}
+        {% if exp.job_desc %}<p class="text-sm text-gray-700 mt-1">{{ exp.job_desc }}</p>{% endif %}
+      </div>
+      {% endfor %}
+    </section>
+    {% endif %}
+
+    <!-- Projects -->
+    {% if projects and projects|length > 0 %}
+    <section>
+      <h3 class="text-lg font-semibold mb-3 text-indigo-700">Projects</h3>
+      {% for project in projects %}
+      <div class="mb-4 {% if not loop.last %}pb-4 border-b border-gray-200{% endif %}">
+        <div class="flex justify-between items-start">
+          <div class="font-semibold text-gray-800">{{ project.name }}</div>
+          {% if project.link %}
+          <a href="{{ project.link }}" target="_blank" class="text-xs text-indigo-600 hover:underline">🔗 View</a>
+          {% endif %}
+        </div>
+        {% if project.description %}
+        <p class="text-sm text-gray-700 mt-1">{{ project.description }}</p>
+        {% endif %}
+      </div>
+      {% endfor %}
+    </section>
+    {% endif %}
+
+    <!-- Certifications -->
+    {% if certifications and certifications|length > 0 %}
+    <section>
+      <h3 class="text-lg font-semibold mb-3 text-indigo-700">Certifications</h3>
+      {% for cert in certifications %}
+      <div class="mb-3">
+        <div class="font-semibold text-gray-800">{{ cert.name }}</div>
+        <div class="text-sm text-gray-600">
+          {% if cert.issuer %}{{ cert.issuer }}{% endif %}
+          {% if cert.year %} • {{ cert.year }}{% endif %}
+        </div>
+      </div>
+      {% endfor %}
+    </section>
+    {% endif %}
+
+    <!-- Education -->
+    {% if degree or institute or grad_year %}
+    <section>
+      <h3 class="text-lg font-semibold mb-2 text-indigo-700">Education</h3>
+      <div class="text-sm">
+        {% if degree %}<div class="font-semibold text-gray-800">{{ degree }}</div>{% endif %}
+        {% if institute %}<div class="text-gray-600">{{ institute }}</div>{% endif %}
+        {% if grad_year %}<div class="text-gray-600">Graduated: {{ grad_year }}</div>{% endif %}
+      </div>
+    </section>
+    {% endif %}
+
+    <div class="text-right pt-4 no-print">
+      <button onclick="window.print()" class="bg-indigo-600 text-white px-4 py-2 rounded">Save as PDF</button>
+    </div>
+  </div>
+</div>
+
+<script>
+  async function regenerateBio() {
+    const res = await fetch('/regen/bio', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        name: "{{ name }}",
+        profession: "{{ profession }}",
+        skills: "{{ ', '.join(skills) }}"
+      })
+    });
+    const data = await res.json();
+    document.querySelector('#bio').innerText = data.bio;
+  }
+</script>
+
+</body>
+</html>

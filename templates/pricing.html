@@ -1,0 +1,73 @@
+{% extends "base.html" %}
+
+{% block title %}Pricing - Resumify{% endblock %}
+
+{% block content %}
+<!-- Hero Section -->
+<section class="text-center bg-gradient-to-r from-indigo-600 to-purple-600 text-white rounded-3xl py-16 px-6 mb-12 shadow-lg">
+  <h2 class="text-5xl font-extrabold mb-4">Plans that grow with you</h2>
+  <p class="text-lg opacity-90 max-w-2xl mx-auto">Start free, explore templates, and unlock unlimited potential when you're ready. No subscriptions, just simple one-time upgrades.</p>
+</section>
+
+<!-- Pricing Cards -->
+<section class="text-center">
+  <div class="grid grid-cols-1 md:grid-cols-3 gap-10">
+    
+    <!-- Free Plan -->
+    <div class="bg-white rounded-2xl shadow-lg p-8 border border-gray-200 hover:shadow-2xl transition">
+      <h3 class="text-2xl font-bold text-indigo-600 mb-2">Free</h3>
+      <p class="text-gray-500 mb-6">Get started with 3 tokens per day</p>
+      <p class="text-4xl font-extrabold mb-6">₹0<span class="text-lg font-medium text-gray-500"> / day</span></p>
+      <ul class="text-left space-y-3 mb-6">
+        <li>✔ 3 Free Tokens Daily</li>
+        <li>✔ Basic Resume Templates</li>
+        <li>✖ Premium Templates</li>
+      </ul>
+
+      {% if current_user.is_authenticated %}
+        <a href="{{ url_for('index') }}" 
+          class="block w-full bg-indigo-600 text-white py-3 rounded-xl font-medium hover:bg-indigo-700">
+          Get Started
+        </a>
+      {% else %}
+        <a href="{{ url_for('register') }}" 
+          class="block w-full bg-indigo-600 text-white py-3 rounded-xl font-medium hover:bg-indigo-700">
+          Get Started
+        </a>
+      {% endif %}
+    </div>
+
+
+    <!-- Pro Pack (Highlighted) -->
+    <div class="relative bg-gradient-to-br from-indigo-600 to-purple-600 text-white rounded-2xl shadow-2xl p-8 transform hover:-translate-y-3 transition duration-300 scale-105">
+      <!-- Badge -->
+      <span class="absolute top-0 right-0 bg-yellow-400 text-black px-3 py-1 text-xs font-bold rounded-bl-2xl rounded-tr-2xl">Most Popular</span>
+      <h3 class="text-2xl font-bold mb-2">Pro Pack</h3>
+      <p class="mb-6 opacity-90">One-time boost for professionals</p>
+      <p class="text-4xl font-extrabold mb-6">₹199<span class="text-lg font-medium opacity-80"> / once</span></p>
+      <ul class="text-left space-y-3 mb-6">
+        <li>✔ 15 Tokens</li>
+        <li>✔ 5 Premium Templates</li>
+        <li>✔ Priority Support</li>
+      </ul>
+      <a href="#" class="block w-full bg-white text-indigo-600 py-3 rounded-xl font-medium hover:bg-gray-100 transition">Buy Now</a>
+    </div>
+
+    <!-- Ultimate Pack -->
+    <div class="bg-white rounded-2xl shadow-lg p-8 border border-gray-200 hover:-translate-y-2 transition transform duration-300">
+      <h3 class="text-2xl font-bold text-indigo-600 mb-2">Ultimate Pack</h3>
+      <p class="text-gray-500 mb-6">Lifetime unlimited access</p>
+      <p class="text-4xl font-extrabold mb-6">₹499<span class="text-lg font-medium text-gray-500"> / lifetime</span></p>
+      <ul class="text-left space-y-3 mb-6">
+        <li>✔ Unlimited Tokens</li>
+        <li>✔ All Premium Templates</li>
+        <li>✔ Lifetime Access</li>
+      </ul>
+      <a href="#" class="block w-full bg-indigo-600 text-white py-3 rounded-xl font-medium hover:bg-indigo-700 transition">Get Ultimate</a>
+    </div>
+  </div>
+  
+  <!-- Trust Note -->
+  <p class="mt-12 text-sm text-gray-500">One-time purchase. No subscriptions. Secure and simple upgrades.</p>
+</section>
+{% endblock %}
